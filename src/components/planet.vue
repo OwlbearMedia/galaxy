@@ -21,8 +21,8 @@ export default {
     };
   },
   mounted() {
-    const width = window.innerWidth - 30;
-    const height = window.innerHeight - 30;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
     // Earth params
     const radius = 0.5;
     const segments = 32;
@@ -36,7 +36,7 @@ export default {
     const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: this.$refs.canvas });
     renderer.setSize(width, height);
 
-    scene.add(new THREE.AmbientLight(0x333333));
+    scene.add(new THREE.AmbientLight(0x333333, 0.375));
 
     const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(5, 3, 5);
@@ -54,6 +54,8 @@ export default {
     scene.add(stars);
 
     const controls = new OrbitControls(camera);
+    controls.maxDistance = 100;
+    controls.minDistance = 0.8;
 
     function render() {
       controls.update();
@@ -106,6 +108,15 @@ export default {
     createStars(radius, segments) {
       return new THREE.Mesh(
         new THREE.SphereGeometry(radius, segments, segments),
+        new THREE.MeshBasicMaterial({
+          map: this.loader.load(this.starsMap()),
+          side: THREE.BackSide,
+        }),
+      );
+    },
+    createLights(radius, segments) {
+      return new THREE.Mesh(
+        new THREE.SphereGeometry(radius, segments, segments, 180, Math.PI * 1, 0, Math.PI),
         new THREE.MeshBasicMaterial({
           map: this.loader.load(this.starsMap()),
           side: THREE.BackSide,
